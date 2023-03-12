@@ -42,22 +42,22 @@ You WILL NEED to run this commandlet (via the Extensions -> Blueprint Inspector 
 
 When you open an Unreal .h file or .cpp file that contains Blueprint native C++ functions, Intellisense will parse the file and then CodeLens will display information about Blueprint functions in that file.  Depending on the speed of your computer, this process can take a while.  You can tell when files are being scanned by looking at the 'Background tasks' button in the lower left corner of Visual Studio.  Any time you see that icon doing activity, you know that things are being updated.  Clicking on the 'Background tasks' button (or using Ctrl-E, Ctrl-T) will show you a list of which background tasks are active.  The CodeLens information will show up shortly after the background tasks are complete.  For example, you may see something like this...
 
-![BackgroundTasks](../blob/master/images/BackgroundTasks.png?raw=true)
+![BackgroundTasks](/images/BackgroundTasks.png)
 
 Once the file(s) have been parsed, you should see the CodeLens information for Blueprint assets soon after that.  For example, I have opened the Actor.h header file and scrolled down to see some of the Blueprint functions in that header file...
 
-![BlueprintInspector_1](../blob/master/images/BlueprintInspector_1.png?raw=true)
+![BlueprintInspector_1](/images/BlueprintInspector_1.png)
 
 Here you can see that 'K2_DestroyActor' is used by 2 Blueprint assets, 'HasAuthority' is used by 1 Blueprint asset, and 'AddComponent' is used by 10 Blueprint assets.
 
 To see the list of Blueprint assets using that function, click on the CodeLens "x Blueprint assets" item immediately above the function declaration.  You would see something like this...
 
-![BlueprintInspector_2](../blob/master/images/BlueprintInspector_2.png?raw=true)
+![BlueprintInspector_2](/images/BlueprintInspector_2.png)
 
 From this pop up, you can copy the list of Blueprint assets (along with the class name and function name) to the Windows clipboard and paste that into a text file.  If the Unreal editor is running, you can double click on one of these Blueprint assets and the editor will automatically open that Blueprint asset and focus on the Node for that function in the Blueprint (if there are more than one matching Node, it will only focus on the first instance of that Node that it finds but you can use the 'Find in Blueprints' feature to search for the other uses of that function name).
 
 In the upper right corner of that CodeLesn pop up, there is a 'Dock Popup' button that you can click on if you want to open this list in the docked 'CodeLens Blueprint Inspector - C++ Unit Test' window.  This window also has a "Copy all to clipboard" button but it will not contain the class name and function name for later reference.
 
-![BlueprintInspector_3](../blob/master/images/BlueprintInspector_3.png?raw=true)
+![BlueprintInspector_3](/images/BlueprintInspector_3.png)
 
 If you find it annoying that CodeLens keeps shuffling around text in the Visual Studio text editor while it displays Blueprint information, you can disable the 'Show Blueprint Inspector' item in the 'Tools' -> 'Options' -> 'Text Editor' -> 'All Languages' -> 'Code Lens' dialog to temporarily turn off showing CodeLens information for Blueprint Inspector and this will prevent CodeLens from shuffling the text around in the editor when you open files.
