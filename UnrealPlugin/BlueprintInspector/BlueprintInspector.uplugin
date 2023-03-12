@@ -1,0 +1,28 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Blueprint Inspector",
+	"Description": "Utility for displaying Blueprint information in Visual Studio from CodeLens",
+	"Category": "Editor",
+	"CreatedBy": "Jeffrey Broome",
+	"CreatedByURL": "https://github.com/botman99/BlueprintInspector",
+	"DocsURL": "https://github.com/botman99/BlueprintInspector",
+	"MarketplaceURL": "",
+	"EngineVersion": "5.1.0",
+	"CanContainContent": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "BlueprintInspector",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64"
+			],
+			"WhitelistTargets": [
+				"Editor"
+			]
+		}
+	]
+}
