@@ -8,7 +8,7 @@
 	"CreatedBy": "Jeffrey Broome",
 	"CreatedByURL": "https://github.com/botman99/BlueprintInspector",
 	"DocsURL": "https://github.com/botman99/BlueprintInspector",
-	"MarketplaceURL": "",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/2f7aaf4012fc446c8fa95fa5202d9cfe",
 	"EngineVersion": "5.1.0",
 	"CanContainContent": false,
 	"Installed": true,

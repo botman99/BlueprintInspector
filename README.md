@@ -6,11 +6,11 @@
 
 1. First things first.  Make sure Intellisense is enabled.  Blueprint Inspector uses [Microsoft's Visual Studio CodeLens](https://learn.microsoft.com/en-us/visualstudio/ide/find-code-changes-and-other-history-with-codelens?view=vs-2022) to display information about which Unreal Blueprint assets use which native C++ functions.  CodeLens **requires** [C++ Intellisense](https://learn.microsoft.com/en-us/visualstudio/ide/visual-cpp-intellisense?view=vs-2022) to be enabled.  To check if Intellisense is enabled or disabled, in Visual Studio, click on 'Tools' -> 'Options' in the Visual Studio main menu and scroll down to 'Text Editor' and expand it.  Then expand 'C/C++' and click on 'Advanced'.  In the 'Browsing/Navigation' section, you want 'Disable Database' to be set to 'False' (along with the other 'Disable' settings from 'Disable Database Updates' to 'Disable External Dependencies Folders').  Once these are set to 'False', click the 'OK' button to close that dialog.
 
-2. Install the Blueprint Inspector Unreal Engine plugin (xxx insert link to Epic Marketplace here).
+2. Install the [Blueprint Inspector](https://www.unrealengine.com/marketplace/en-US/product/blueprintinspector) Unreal Engine plugin.
 
 3. Enable the Blueprint Inspector plugin by running the Unreal editor and use 'Edit' -> 'Plugins' from the editor main menu to search for the "Blueprint Inspector" plugin and check the 'Enabled' checkbox, then click the 'Restart Now' button.
 
-4. Install the 'BlueprintInspector' extension for Visual Studio 2019 or 2022 (xxx insert links to Microsoft Marketplace here).
+4. Install the 'BlueprintInspector' extension for Visual Studio [2019](https://marketplace.visualstudio.com/items?itemName=JeffBroome.BlueprintInspector2019) or [2022](https://marketplace.visualstudio.com/items?itemName=JeffBroome.BlueprintInspector2022).
 
 5. Open the Unreal Solution file (.sln) for your project in Visual Studio.
 

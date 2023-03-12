@@ -10,6 +10,7 @@
 *.sln.docstates
 
 EpicMarketplace/
+MicrosoftMarketplace/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
