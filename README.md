@@ -1,7 +1,6 @@
 
 # Blueprint Inspector
 
-
 ## Getting set up:
 
 1. First things first.  Make sure Intellisense is enabled.  Blueprint Inspector uses [Microsoft's Visual Studio CodeLens](https://learn.microsoft.com/en-us/visualstudio/ide/find-code-changes-and-other-history-with-codelens?view=vs-2022) to display information about which Unreal Blueprint assets use which native C++ functions.  CodeLens **requires** [C++ Intellisense](https://learn.microsoft.com/en-us/visualstudio/ide/visual-cpp-intellisense?view=vs-2022) to be enabled.  To check if Intellisense is enabled or disabled, in Visual Studio, click on 'Tools' -> 'Options' in the Visual Studio main menu and scroll down to 'Text Editor' and expand it.  Then expand 'C/C++' and click on 'Advanced'.  In the 'Browsing/Navigation' section, you want 'Disable Database' to be set to 'False' (along with the other 'Disable' settings from 'Disable Database Updates' to 'Disable External Dependencies Folders').  Once these are set to 'False', click the 'OK' button to close that dialog.
@@ -25,7 +24,7 @@ You will see some checkboxes that can be unchecked to exclude some of the Bluepr
 
 Once you have the checkboxes set the way you want, click the 'OK' button to start running the Blueprint Inspector commandlet that will generate the JSON file.
 
-The Blueprint Inspector commandlet should take less than a minute to run on very small projects (depending on your computer's CPU and disk speed).  For very large projects with tens of thousands of Blueprint assets, the commandlet can take 10 or 15 minutes to run (or longer).
+The Blueprint Inspector commandlet should take less than a minute to run on very small projects (depending on your computer's CPU and disk speed).  For very large projects with tens of thousands of Blueprint assets, the commandlet can take 10 or 20 minutes to run (or longer).
 
 When the Blueprint Inspector commandlet starts, it will open a new pane in the Visual Studio 'Output' window where you can watch the progress of the commandlet as it runs.  You can see this output in the Output window by selecting 'Blueprint Inspector' from the "Show output from:" dropdown in the Output window.
 

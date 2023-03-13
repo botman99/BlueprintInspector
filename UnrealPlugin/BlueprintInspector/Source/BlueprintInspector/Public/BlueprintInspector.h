@@ -1,4 +1,4 @@
-// Copyright Jeffrey "botman" Broome. All Rights Reserved
+// Copyright 2023 - Jeffrey "botman" Broome. All Rights Reserved
 
 #pragma once
 
