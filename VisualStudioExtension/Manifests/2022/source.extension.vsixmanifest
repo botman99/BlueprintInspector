@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BlueprintInspector.1afbb8f9-cb62-4bc2-889c-dcc8644017a4" Version="1.0" Language="en-US" Publisher="Jeffrey Broome" />
+        <Identity Id="BlueprintInspector.5375cf5e-8ab8-4162-aeff-6b7cb435b094" Version="1.0" Language="en-US" Publisher="Jeffrey Broome" />
         <DisplayName>Blueprint Inspector</DisplayName>
         <Description xml:space="preserve">Shows Blueprint asset information in Visual Studio via CodeLens.</Description>
         <MoreInfo>https://github.com/botman99/BlueprintInspector</MoreInfo>
