@@ -7,6 +7,8 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleInterface.h"
 #include "Modules/ModuleManager.h"
+#include "Containers/Ticker.h"
+#include "Async/Future.h"
 #include "HAL/PlatformNamedPipe.h"
 
 class FBlueprintInspectorModule : public IModuleInterface
@@ -17,8 +19,8 @@ public:
 	virtual void ShutdownModule() override;
 
 #if WITH_EDITOR
-	static void GatherK2NodesForAsset(UObject* BlueprintAsset, EObjectFlags ObjectFlag, TArray<UK2Node*>& K2Nodes);
-	static void GetK2NodeClassFunction(UBlueprintGeneratedClass* BlueprintGeneratedClass, UK2Node* K2Node, UClass*& NodeClass, FName& NodeFunction);
+	static void GatherK2NodesForAsset(UObject* BlueprintAsset, EObjectFlags ObjectFlag, TArray<class UK2Node*>& K2Nodes);
+	static void GetK2NodeClassFunction(class UBlueprintGeneratedClass* BlueprintGeneratedClass, class UK2Node* K2Node, UClass*& NodeClass, FName& NodeFunction);
 
 	void OnAssetRegistryFilesLoaded();
 
