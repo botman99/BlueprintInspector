@@ -9,8 +9,12 @@
 *.userosscache
 *.sln.docstates
 
+.p4config
+.p4ignore.txt
+
 EpicMarketplace/
 MicrosoftMarketplace/
+BlueprintInspector.txt
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
