@@ -2,9 +2,11 @@
 
 #include "BlueprintInspectorCommandlet.h"
 #include "BlueprintInspector.h"
+#include "UObject/UObjectIterator.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "BlueprintInspectorModule.h"
 #include "BlueprintAssetHandler.h"
+#include "Engine/Blueprint.h"
 #include "Serialization/JsonWriter.h"
 #include "Serialization/JsonSerializer.h"
 #include "Policies/CondensedJsonPrintPolicy.h"
