@@ -50,7 +50,7 @@ namespace BlueprintInspector
 
 		private static Int32 VisualStudioProcessId = 0;
 
-		private	static System.Threading.Thread NamedPipeWorkerThread = null;
+		private static System.Threading.Thread NamedPipeWorkerThread = null;
 		private static System.Threading.Thread RunExecutableThread = null;
 
 		private static MemoryMappedFile mmf = null;
@@ -59,7 +59,6 @@ namespace BlueprintInspector
 		private static char[] InvalidChars;
 
 		private Guid OutputPaneGuid = Guid.Empty;
-
 		#region Package Members
 
 		/// <summary>
@@ -115,7 +114,7 @@ namespace BlueprintInspector
 				{
 					mmf = MemoryMappedFile.CreateNew(String.Format("BlueprintInspector{0}", VisualStudioProcessId), 4096);
 				}
-				catch(Exception)
+				catch (Exception)
 				{
 					return;
 				}
@@ -137,7 +136,7 @@ namespace BlueprintInspector
 				// see if we have a solution loaded...
 
 				// we need the solution directory to determine where the JSON file is (it will be inside the ".vs" folder where the .sln file is)
-				IVsSolution solution = (IVsSolution) Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(IVsSolution));
+				IVsSolution solution = (IVsSolution)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(IVsSolution));
 				if (solution != null)
 				{
 					solution.GetSolutionInfo(out string solutionDirectory, out string solutionName, out string solutionDirectory2);
@@ -150,7 +149,7 @@ namespace BlueprintInspector
 					}
 				}
 			}
-			catch(Exception)
+			catch (Exception)
 			{
 			}
 		}
@@ -221,7 +220,7 @@ namespace BlueprintInspector
 			try
 			{
 				// we need the solution directory to determine where the JSON file is (it will be inside the ".vs" folder where the .sln file is)
-				IVsSolution solution = (IVsSolution) Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(IVsSolution));
+				IVsSolution solution = (IVsSolution)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(IVsSolution));
 				if (solution != null)
 				{
 					solution.GetSolutionInfo(out string solutionDirectory, out string solutionName, out string solutionDirectory2);
@@ -234,7 +233,7 @@ namespace BlueprintInspector
 					}
 				}
 			}
-			catch(Exception)
+			catch (Exception)
 			{
 			}
 
@@ -293,13 +292,111 @@ namespace BlueprintInspector
 		{
 			return VSConstants.S_OK;
 		}
-		// IVsSolutionLoadEvents interface end
+        // IVsSolutionLoadEvents interface end
 
-		#endregion
+        #endregion
 
-		#region IOleCommandTarget
+        public static bool DetectUESolution(IVsSolution2 solution, out string UnrealEditorTargetFile, out IVsProject UE5Project, out IVsProject UE4Project, out IVsProject EngineProject, out IVsProject SourceProject)
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			bool bRet = false;
+			UnrealEditorTargetFile = "";
+			UE5Project = null;
+			UE4Project = null;
+			EngineProject = null;
+			SourceProject = null;
 
-		int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+			try
+			{
+				do
+				{
+					// search the solution for a C++ project that contains a file with ".uproject" extension of the same name as the project...
+					// IVsSolution2 solution = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolution)) as IVsSolution2;
+					if (solution == null)
+					{
+						break;
+					}
+
+					solution.GetSolutionInfo(out string solutionDirectory, out string solutionName, out string solutionDirectory2);
+					if (solutionDirectory == null || solutionDirectory == "")
+					{
+						break;
+					}
+
+					IVsHierarchy solutionHierarchy = (IVsHierarchy)solution;
+					IVsProject solutionProject = null;
+
+					GetHierarchyInSolution(solutionHierarchy, VSConstants.VSITEMID_ROOT, ref solutionProject, "Engine", "", "", out IVsHierarchy EngineHierarchy, out EngineProject, out uint EngineItemId, out string Unused1);
+					if ((EngineHierarchy != null) && (EngineProject != null))
+					{
+						GetHierarchyInSolution(EngineHierarchy, VSConstants.VSITEMID_ROOT, ref EngineProject, "UE5", "", "", out IVsHierarchy UE5Hierarchy, out UE5Project, out uint UE5ItemId, out string Unused2);
+						if ((UE5Hierarchy != null) && (UE5Project != null))
+						{
+							GetHierarchyInSolution(UE5Hierarchy, VSConstants.VSITEMID_ROOT, ref UE5Project, "", "Source", "", out IVsHierarchy SourceHierarchy, out SourceProject, out uint SourceItemId, out string Unused3);
+							if ((SourceHierarchy != null) && (SourceProject != null))
+							{
+								GetHierarchyInSolution(SourceHierarchy,
+													   SourceItemId,
+													   ref SourceProject,
+													   "",
+													   "",
+													   "UnrealEditor.Target.cs",
+													   out IVsHierarchy UnusedHierarchy,
+													   out IVsProject UnusedProject,
+													   out uint UnusedItemId,
+													   out UnrealEditorTargetFile);
+							}
+						}
+						else  // if UE5 not found, then check if UE4...
+						{
+							GetHierarchyInSolution(EngineHierarchy, VSConstants.VSITEMID_ROOT, ref EngineProject, "UE4", "", "", out IVsHierarchy UE4Hierarchy, out UE4Project, out uint UE4ItemId, out string Unused4);
+							if ((UE4Hierarchy != null) && (UE4Project != null))
+							{
+								GetHierarchyInSolution(UE4Hierarchy, VSConstants.VSITEMID_ROOT, ref UE4Project, "", "Source", "", out IVsHierarchy SourceHierarchy, out SourceProject, out uint SourceItemId, out string Unused3);
+								if ((SourceHierarchy != null) && (SourceProject != null))
+								{
+									GetHierarchyInSolution(SourceHierarchy,
+														   SourceItemId,
+														   ref SourceProject,
+														   "",
+														   "",
+														   "UE4Editor.Target.cs",
+														   out IVsHierarchy UnusedHierarchy,
+														   out IVsProject UnusedProject,
+														   out uint UnusedItemId,
+														   out UnrealEditorTargetFile);
+								}
+							}
+						}
+					}
+
+					if (UnrealEditorTargetFile == "")
+					{
+						break;
+					}
+
+					// string UnrealEditorTargetDirectory = Path.GetDirectoryName(UnrealEditorTargetFile);
+					// DirectoryInfo EngineDirectoryInfo = System.IO.Directory.GetParent(UnrealEditorTargetDirectory);
+					bRet = true;
+				} while (false);
+			}
+			catch (Exception e)
+			{
+				BlueprintInspectorGlobals.OutputPane.OutputStringThreadSafe($"Exception : {e}\n");
+			}
+			return bRet;
+		}
+
+		public static bool IsUESolution()
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			IVsSolution2 solution = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolution)) as IVsSolution2;
+			return DetectUESolution(solution, out _, out _, out _, out _, out _);
+		}
+
+#region IOleCommandTarget
+
+        int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 		{
 			ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -308,13 +405,13 @@ namespace BlueprintInspector
 				switch (prgCmds[0].cmdID)
 				{
 					case GuidAndCmdID.cmdidGenerateJsonFile:
-						prgCmds[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED | OLECMDF.OLECMDF_INVISIBLE);
+						prgCmds[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE) | (IsUESolution() ? (uint)OLECMDF.OLECMDF_ENABLED : 0);
 						return VSConstants.S_OK;
 					case GuidAndCmdID.cmdidCopyToClipboard:
-						prgCmds[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED | OLECMDF.OLECMDF_INVISIBLE);
+						prgCmds[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE) | (IsUESolution() ? (uint)OLECMDF.OLECMDF_ENABLED : 0);
 						return VSConstants.S_OK;
 					case GuidAndCmdID.cmdidOpenAssetPath:
-						prgCmds[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED | OLECMDF.OLECMDF_INVISIBLE);
+						prgCmds[0].cmdf |= (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE) | (IsUESolution() ? (uint)OLECMDF.OLECMDF_ENABLED : 0);
 						return VSConstants.S_OK;
 				}
 			}
@@ -349,8 +446,7 @@ namespace BlueprintInspector
 
 							// search the solution for a C++ project that contains a file with ".uproject" extension of the same name as the project...
 							IVsSolution2 solution = ServiceProvider.GlobalProvider.GetService(typeof(SVsSolution)) as IVsSolution2;
-
-							if (solution == null)
+                            if (solution == null)
 							{
 								message = "You must load an Unreal Engine solution file.";
 								title = "WARNING!";
@@ -433,18 +529,18 @@ namespace BlueprintInspector
 
 							List<string> projectFilenames = new List<string>();
 
-				            IEnumHierarchies enumerator = null;
-				            Guid guid = Guid.Empty;
-				            solution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION, ref guid, out enumerator);
+							IEnumHierarchies enumerator = null;
+							Guid guid = Guid.Empty;
+							solution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_LOADEDINSOLUTION, ref guid, out enumerator);
 
-				            IVsHierarchy[] hierarchy = new IVsHierarchy[1] { null };
-				            uint fetched = 0;
-				            for (enumerator.Reset(); enumerator.Next(1, hierarchy, out fetched) == VSConstants.S_OK && fetched == 1; /*nothing*/)
-				            {
-				                IVsProject Project = (IVsProject)hierarchy[0];
+							IVsHierarchy[] hierarchy = new IVsHierarchy[1] { null };
+							uint fetched = 0;
+							for (enumerator.Reset(); enumerator.Next(1, hierarchy, out fetched) == VSConstants.S_OK && fetched == 1; /*nothing*/)
+							{
+								IVsProject Project = (IVsProject)hierarchy[0];
 
 								GetProjectFilesInProject(hierarchy[0], VSConstants.VSITEMID_ROOT, ref Project, ref projectFilenames);
-				            }
+							}
 
 							if (projectFilenames.Count == 0)
 							{
@@ -454,6 +550,20 @@ namespace BlueprintInspector
 								VsShellUtilities.ShowMessageBox(this as IServiceProvider, message, title, OLEMSGICON.OLEMSGICON_CRITICAL, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
 								return VSConstants.S_OK;
+							}
+
+							ServiceProvider s = ServiceProvider.GlobalProvider;
+							EnvDTE._DTE dte = (EnvDTE._DTE)s.GetService(typeof(EnvDTE._DTE));
+							if (dte != null)
+							{
+								string Default = dte.Solution.FullName + ".uproject";
+								var Idx = projectFilenames.FindIndex(a => a.EndsWith(Default));
+								if (Idx > 0) 
+								{
+									var Cur = projectFilenames[Idx];
+									projectFilenames[Idx] = projectFilenames[0];
+									projectFilenames[0] = Cur;
+								}
 							}
 
 							string projectName = "";
@@ -498,22 +608,63 @@ namespace BlueprintInspector
 								}
 							}
 
+							string CFGName = (dte != null) ? dte.Solution.SolutionBuild.ActiveConfiguration.Name : "";
 							if (BlueprintInspectorGlobals.OutputPane != null)
 							{
+								// use EngineDirectory, ProjectFilename and SolutionDirectory in BlueprintInspectorGlobals to run the commandlet...
+								string UnrealEditorCmd = "";
+								string HeaderName = bIsUE4Project ? "UE4Editor" : "UnrealEditor";
+
+								if (String.IsNullOrEmpty(UnrealEditorCmd) && CFGName.Contains("DebugGame Editor"))
+								{
+									string TestPath = "\"" + BlueprintInspectorGlobals.EngineDirectory + $"\\Binaries\\Win64\\{HeaderName}-DebugGame-Win64-Cmd.exe\"";
+									if (File.Exists(TestPath))
+										UnrealEditorCmd = TestPath;
+								}
+								if (String.IsNullOrEmpty(UnrealEditorCmd) && CFGName.Contains("Debug Editor"))
+								{
+									string TestPath = "\"" + BlueprintInspectorGlobals.EngineDirectory + $"\\Binaries\\Win64\\{HeaderName}-Debug-Win64-Cmd.exe\"";
+									if (File.Exists(TestPath))
+										UnrealEditorCmd = TestPath;
+								}
+								if (String.IsNullOrEmpty(UnrealEditorCmd))
+								{
+									UnrealEditorCmd = "\"" + BlueprintInspectorGlobals.EngineDirectory + $"\\Binaries\\Win64\\{HeaderName}-Cmd.exe\"";
+								}
+
+								string command = String.Format("\"{0}\" -Log -FullStdOutLogOutput -run=BlueprintInspectorCommandlet -outfile=\"{1}\"",
+															   BlueprintInspectorGlobals.ProjectFilename,
+															   BlueprintInspectorGlobals.SolutionDirectory + ".vs\\BlueprintInspector.json");
+
+								if (!bIncludeEngine)
+								{
+									command += " -skipengine";
+								}
+
+								if (!bIncludePlugins)
+								{
+									command += " -skipplugins";
+								}
+
+								if (!bIncludeDevelopers)
+								{
+									command += " -skipdevelopers";
+								}
+
 								BlueprintInspectorGlobals.OutputPane.Activate();
-								BlueprintInspectorGlobals.OutputPane.OutputStringThreadSafe("Running BlueprintInspector commandlet now...");
-								BlueprintInspectorGlobals.OutputPane.OutputStringThreadSafe("\n");
+								BlueprintInspectorGlobals.OutputPane.OutputStringThreadSafe($"Running BlueprintInspector commandlet now ...\n{command}\n");
 							}
 
-							RunExecutableThread = new System.Threading.Thread(new RunExecutable(bIsUE4Project, bIncludeEngine, bIncludePlugins, bIncludeDevelopers).Run);
+							RunExecutableThread = new System.Threading.Thread(new RunExecutable(bIsUE4Project, bIncludeEngine, bIncludePlugins, bIncludeDevelopers, CFGName).Run);
 							RunExecutableThread.Priority = ThreadPriority.Normal;
 							RunExecutableThread.Start();  // start the thread running
 						}
-						catch(Exception)
+						catch (Exception e)
 						{
+							BlueprintInspectorGlobals.OutputPane.OutputStringThreadSafe($"Exception : {e}\n");
 						}
 					}
-					return VSConstants.S_OK;
+						return VSConstants.S_OK;
 
 					case GuidAndCmdID.cmdidCopyToClipboard:
 					{
@@ -651,7 +802,7 @@ namespace BlueprintInspector
 									(projectFilename.IndexOf(":", StringComparison.OrdinalIgnoreCase) == 1))  // make sure filename is of the form: drive letter followed by colon
 								{
 
-									if (projectFilename.EndsWith(".uproject"))
+									if (projectFilename.EndsWith(".uproject") && !projectFilename.EndsWith("UnrealLaunchDaemon.uproject"))
 									{
 										projectFilenames.Add(projectFilename);
 									}
@@ -678,7 +829,7 @@ namespace BlueprintInspector
 		}
 
 		// searches the solution for a specific project name, folder name, or file name
-		private void GetHierarchyInSolution(IVsHierarchy hierarchy, uint itemId, ref IVsProject Project, string SearchProject, string SearchFolder, string SearchFileName, out IVsHierarchy OutHierarchy, out IVsProject OutProject, out uint OutItemId, out string OutFilename)
+		private static void GetHierarchyInSolution(IVsHierarchy hierarchy, uint itemId, ref IVsProject Project, string SearchProject, string SearchFolder, string SearchFileName, out IVsHierarchy OutHierarchy, out IVsProject OutProject, out uint OutItemId, out string OutFilename)
 		{
 			ThreadHelper.ThrowIfNotOnUIThread();
 
