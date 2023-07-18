@@ -16,9 +16,10 @@ namespace BlueprintInspector
 		private bool bIsUE4Project;
 		private bool bIncludeEngine;
 		private bool bIncludePlugins;
-		private bool bIncludeDevelopers;
+        private bool bIncludeDevelopers;
+        private string CFGName;
 
-		private MemoryMappedFile mmf = null;
+        private MemoryMappedFile mmf = null;
 		private Mutex mutex = null;
 
 		private bool JsonFileUpdated = false;
@@ -30,13 +31,15 @@ namespace BlueprintInspector
 		private bool bBlueprintInspectorCommandletCompleted = false;
 		private bool bCommandletProcessCompleted = false;
 
-		public RunExecutable(bool bInIsUE4Project, bool bInIncludeEngine, bool bInIncludePlugins, bool bInIncludeDevelopers)
+		public RunExecutable(bool bInIsUE4Project, bool bInIncludeEngine, bool bInIncludePlugins, bool bInIncludeDevelopers, string InCfgName)
 		{
 			bIsUE4Project = bInIsUE4Project;
 			bIncludeEngine = bInIncludeEngine;
 			bIncludePlugins = bInIncludePlugins;
 			bIncludeDevelopers = bInIncludeDevelopers;
-		}
+			CFGName = InCfgName;
+
+        }
 
 		public void Run()
 		{
@@ -57,14 +60,23 @@ namespace BlueprintInspector
 
 				// use EngineDirectory, ProjectFilename and SolutionDirectory in BlueprintInspectorGlobals to run the commandlet...
 				string UnrealEditorCmd = "";
+				string HeaderName = bIsUE4Project ? "UE4Editor" : "UnrealEditor";
 
-				if (bIsUE4Project)
+				if (String.IsNullOrEmpty(UnrealEditorCmd) && CFGName == "DebugGame Editor")
 				{
-					UnrealEditorCmd = "\"" + BlueprintInspectorGlobals.EngineDirectory + "\\Binaries\\Win64\\UE4Editor-Cmd.exe\"";
+					string TestPath = BlueprintInspectorGlobals.EngineDirectory + $"\\Binaries\\Win64\\{HeaderName}-Win64-DebugGame-Cmd.exe";
+					if (File.Exists(TestPath))
+						UnrealEditorCmd = TestPath;
 				}
-				else
+				if (String.IsNullOrEmpty(UnrealEditorCmd) && CFGName == "Debug Editor")
 				{
-					UnrealEditorCmd = "\"" + BlueprintInspectorGlobals.EngineDirectory + "\\Binaries\\Win64\\UnrealEditor-Cmd.exe\"";
+					string TestPath = BlueprintInspectorGlobals.EngineDirectory + $"\\Binaries\\Win64\\{HeaderName}-Win64-Debug-Cmd.exe";
+					if (File.Exists(TestPath))
+						UnrealEditorCmd = TestPath;
+				}
+				if (String.IsNullOrEmpty(UnrealEditorCmd))
+				{
+					UnrealEditorCmd = BlueprintInspectorGlobals.EngineDirectory + $"\\Binaries\\Win64\\{HeaderName}-Cmd.exe";
 				}
 
 				string command = String.Format("\"{0}\" -Log -FullStdOutLogOutput -run=BlueprintInspectorCommandlet -outfile=\"{1}\"", BlueprintInspectorGlobals.ProjectFilename, json_filename);
